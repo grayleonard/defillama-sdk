@@ -31,6 +31,16 @@ const terraBlockProvider = {
       })),
 };
 
+const terra2BlockProvider = {
+  getBlock: async (height: number | "latest") =>
+    fetch(`https://phoenix-lcd.terra.dev/blocks/${height}`)
+      .then((res) => res.json())
+      .then((block) => ({
+        number: Number(block.block.header.height),
+        timestamp: Math.round(Date.parse(block.block.header.time) / 1000),
+      })),
+};
+
 async function getBlock(provider: typeof terraBlockProvider, height: number | "latest", chain:string|undefined){
   const block = await provider.getBlock(height)
   if(block === null){
@@ -42,6 +52,8 @@ async function getBlock(provider: typeof terraBlockProvider, height: number | "l
 function getExtraProvider(chain:string|undefined){
   if(chain === "terra"){
     return terraBlockProvider
+  } else if(chain === "terra2"){
+    return terra2BlockProvider
   } else if(chain === "kava"){
     return kavaBlockProvider
   }
